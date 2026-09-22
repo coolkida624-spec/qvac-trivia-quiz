@@ -48,7 +48,7 @@ export async function generateQuestion(modelId, embedModelId, usedIds) {
   });
 
   const distractorFacts = FACTS.filter(
-    (f) => f.id !== correct.id && searchResults.some((r) => r.text === f.fact)
+    (f) => f.id !== correct.id && searchResults.some((r) => r.content === f.fact)
   ).slice(0, 3);
 
   while (distractorFacts.length < 3) {

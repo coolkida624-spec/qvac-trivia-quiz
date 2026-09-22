@@ -6,7 +6,7 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadModel, unloadModel, LLAMA_3_2_1B_INST_Q4_0 } from "@qvac/sdk";
+import { loadModel, unloadModel, LLAMA_3_2_1B_INST_Q4_0, EMBEDDINGGEMMA_300M_Q4_0 } from "@qvac/sdk";
 import { setupWorkspace, generateQuestion } from "./quiz.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -34,9 +34,10 @@ function readBody(req) {
 }
 
 async function main() {
-  console.log("▸ Loading language model + ingesting fact catalog...");
+  console.log("▸ Loading language + embedding models, ingesting fact catalog...");
   const modelId = await loadModel({ modelSrc: LLAMA_3_2_1B_INST_Q4_0 });
-  await setupWorkspace();
+  const embedModelId = await loadModel({ modelSrc: EMBEDDINGGEMMA_300M_Q4_0 });
+  await setupWorkspace(embedModelId);
   console.log("▸ Ready.");
 
   let current = null;
@@ -48,7 +49,7 @@ async function main() {
 
     if (req.method === "POST" && req.url === "/api/new-question") {
       try {
-        current = await generateQuestion(modelId, usedIds);
+        current = await generateQuestion(modelId, embedModelId, usedIds);
         usedIds.push(current.factId);
         if (usedIds.length > 12) usedIds.shift();
         res.writeHead(200, { "Content-Type": "application/json" });
@@ -96,6 +97,7 @@ async function main() {
     console.log("\n▸ Shutting down...");
     server.close();
     await unloadModel({ modelId });
+    await unloadModel({ modelId: embedModelId });
     process.exit(0);
   };
   process.on("SIGINT", shutdown);

@@ -11,9 +11,10 @@ import { FACTS, randomFact } from "./facts.js";
 
 const WORKSPACE = "qvac-trivia-quiz";
 
-export async function setupWorkspace() {
+export async function setupWorkspace(embedModelId) {
   await ragDeleteWorkspace({ workspace: WORKSPACE }).catch(() => {});
   await ragIngest({
+    modelId: embedModelId,
     workspace: WORKSPACE,
     documents: FACTS.map((f) => f.fact),
   });
@@ -36,10 +37,11 @@ function shuffle(arr) {
   return a;
 }
 
-export async function generateQuestion(modelId, usedIds) {
+export async function generateQuestion(modelId, embedModelId, usedIds) {
   const correct = randomFact(usedIds);
 
   const searchResults = await ragSearch({
+    modelId: embedModelId,
     workspace: WORKSPACE,
     query: correct.fact,
     topK: 6,

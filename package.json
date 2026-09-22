@@ -1,0 +1,27 @@
+{
+  "name": "qvac-trivia-quiz",
+  "version": "1.0.0",
+  "description": "Multiple-choice trivia quiz: RAG retrieves related facts as distractors, an on-device LLM phrases the question from the correct fact, and answer checking is fully deterministic. No cloud call, no API key.",
+  "type": "module",
+  "main": "src/gui.js",
+  "scripts": {
+    "start": "node src/gui.js",
+    "gui": "node src/gui.js"
+  },
+  "keywords": [
+    "qvac",
+    "on-device-ai",
+    "trivia",
+    "quiz",
+    "rag",
+    "llm",
+    "offline-ai"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@qvac/sdk": "^0.19.0"
+  },
+  "engines": {
+    "node": ">=22.17"
+  }
+}
